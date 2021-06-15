@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const https = require('https');
+const path = require('path');
 
 const app = express();
 const port = 3000;
@@ -33,10 +34,9 @@ function sendComic(id, res) {
 }
 
 app.use(cors());
-app.use(express.static('static'));
 
 app.get('/:id(\\d+)', (req, res) => {
-    res.sendFile(__dirname + '/static/index.html');
+    res.sendFile(path.join(__dirname, 'static', 'index.html'));
 });
 
 app.get('/:id(\\d+).json', (req, res) => {
