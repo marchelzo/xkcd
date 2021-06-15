@@ -14,8 +14,7 @@ let id = +window.location.pathname.split('/').pop();
 
 function format(s) {
     s = s.replace(/\[\[(.+)\]\]/g, (_, s) => `<em>${s}</em> `);
-    s = s.replace(/&lt;&lt;(.+)&gt;&gt;/g, (_, s) => `<strong>*${s}*</strong>`)
-    s = s.replace(/^[^:]+: /, s => `<strong>${s}</strong>`);
+    s = s.replace(/^[^:]{1,14}: /, s => `<strong>${s}</strong>`);
     return s;
 }
 
@@ -30,8 +29,9 @@ function render(c) {
 
     comic.transcript.innerHTML = '';
 
-    const lines = c.transcript.split('\n');
-    lines.pop();
+    const lines = c.transcript
+                   .replace(/\{\{.*\}\}$/s, '')
+                   .split('\n');
 
     for (const line of lines) {
         const p = document.createElement('p');
