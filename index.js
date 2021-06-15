@@ -35,6 +35,8 @@ function sendComic(id, res) {
 
 app.use(cors());
 
+app.use(express.static(path.join(__dirname, 'static')));
+
 app.get('/:id(\\d+)', (req, res) => {
     res.sendFile(path.join(__dirname, 'static', 'index.html'));
 });
