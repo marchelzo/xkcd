@@ -2,35 +2,36 @@ const express = require('express');
 const cors = require('cors');
 const https = require('https');
 const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const port = process.env.PORT || 3000;
 const count = new Map();
 
-let MAX;
+let MAX_ID;
 
-function withComic(id, f) {
+async function fetchComic(id) {
     const url = 'https://xkcd.com/' +
                 (id && `${id}/` || '') +
                 'info.0.json';
 
-    https.request(url, {}, r => {
-        let json = '';
-        r.on('data', chunk => {
-            json += chunk;
-        });
-        r.on('end', () => {
-            f(JSON.parse(json));
-        });
-    }).end();
+    try {
+        const c = await axios.get(url);
+        return c.data;
+    } catch (e) {
+        console.log(e);
+    }
 }
 
-function sendComic(id, res) {
-    withComic(id, comic => {
-        const views = (count.get(comic.num) || 0) + 1;
-        count.set(comic.num, views);
-        res.json({...comic, views});
-    });
+async function sendComic(id, res) {
+    const comic = await fetchComic(id);
+    if (comic) {
+        comic.views = (count.get(comic.num) || 0) + 1;
+        count.set(comic.num, comic.views);
+        res.json(comic);
+    } else {
+        res.status(404);
+    }
 }
 
 app.use(cors());
@@ -47,14 +48,15 @@ app.get('/:id(\\d+).json', (req, res) => {
 });
 
 app.get('/random.json', (req, res) => {
-    const id = (Math.random() * MAX) | 0;
+    const id = 1 + (Math.random() * MAX_ID) | 0;
     sendComic(id, res);
 });
 
-withComic(0, c => {
-    MAX = c.num;
+fetchComic(0).then(c => {
+    MAX_ID = c.num;
+    app.listen(port, () => {
+        console.log(`Listening on port ${port}`);
+        console.log(`Latest comic is ${MAX_ID}`);
+    });
 });
 
-app.listen(port, () => {
-    console.log('We out here...');
-});

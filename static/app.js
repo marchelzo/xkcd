@@ -24,7 +24,7 @@ function render(c) {
     comic.img.alt = comic.img.title = c.alt;
     comic.title.innerText = c.title;
     comic.date.innerText = `${c.year}/${c.month}/${c.day}`;
-    comic.views.innerText = `${c.views} views`;
+    comic.views.innerText = `${c.views} view${c.views != 1 && 's' || ''}`;
 
     console.log(c);
 
