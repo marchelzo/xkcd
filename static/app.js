@@ -10,11 +10,22 @@ const nextButton = document.querySelector('.next');
 const prevButton = document.querySelector('.prev');
 const randomButton = document.querySelector('.random');
 
+/*
+ * Get the initial comic ID from the URL. If there is no
+ * ID specified, this ends up as 0 (latest comic)
+ */
 let id = +window.location.pathname.split('/').pop();
 
+/*
+ * Really basic transcript parsing / formatting.
+ *
+ * [[TEXT]] becomes <em>TEXT</em>
+ *      and
+ * NAME: TEXT becomes <strong>NAME: </strong>TEXT
+ */
 function format(s) {
     s = s.replace(/\[\[(.+)\]\]/g, (_, s) => `<em>${s}</em> `);
-    s = s.replace(/^[^:]{1,14}: /, s => `<strong>${s}</strong>`);
+    s = s.replace(/^[^:]{1,18}: /, s => `<strong>${s}</strong>`);
     return s;
 }
 
@@ -52,6 +63,5 @@ function load(newID) {
 nextButton.addEventListener('click', () => load(id + 1));
 prevButton.addEventListener('click', () => load(id - 1));
 randomButton.addEventListener('click', () => load('random'));
-
 
 load(id);
